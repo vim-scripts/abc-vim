@@ -49,14 +49,12 @@ endif
 " COMPLETED PATTERNS: AbcFile, AbcStart, FileHeader, AbcTune, TuneHeader,
 " TuneBody, ReservedChars, FieldID, RemarkID, IFieldID, 
 
-"sy match BOM /\uFEFF/ conceal cchar= 
+"sy match AbcBOM /\uFEFF/ conceal cchar= 
 
 sy region AbcFile start=/^%abc\%(-[1-9]\.\d\)\=/ end=/\%$/ keepend contains=AbcTune,AbcTypesetText,AbcFreeText nextgroup=AbcFileHeader skipwhite skipnl
 sy match AbcStart /^%abc\%(-[1-9]\.\d\)\=\ze/ " sets the string '%abc' apart from comments
 sy region AbcFileHeader start=/^%abc\%(-[1-9]\.\d\)\=\zs\%(\_^[A-DF-IL-ORSUZmr]:\p*\)*\ze/ end=/^\s*$/ keepend matchgroup=AbcFieldID contains=AbcDirective,AbcComment
-
 sy region AbcFreeText start=/^\%([^%]\|\)/ end=/^\s*$/ keepend contained contains=AbcSetFontOp containedin=AbcFile
-
 sy region AbcTypesetText start=/\%(^%%\)*/ end=// keepend contained contains=AbcDirective
 
 sy region AbcTune start=/^X:/ end=/^\s*$/ keepend contains=AbcTuneHeader,AbcTuneBody
@@ -69,13 +67,9 @@ sy match AbcFieldID /^[A-DF-IL-ORSUZm]:/ containedin=AbcFileHeader
 sy match AbcFieldID /^[A-DF-IK-XZm]:/ containedin=AbcTuneHeader
 sy match AbcFieldID /^[IK-NP-RT-Wmsw]:/ containedin=AbcTuneBody
 sy match AbcRemarkID /^r:/ containedin=AbcFileHeader,AbcTuneHeader,AbcTuneBody
-
 sy match AbcIFieldID /\[[IK-NP-RUVm]:/ containedin=AbcTuneBody
 sy match AbcIRemarkID /\[r:/ containedin=AbcTuneBody
-
 sy region StringField start=/^[A-DF-HNORSTZ]:/ end=/\%([\w\s-]\|$[0-4]\)*\ze\%($\|%\)\{1}/ keepend oneline contained nextgroup=AbcFieldContinue skipnl matchgroup=FieldID contains=@AbcMnemonics,AbcUnicode,AbcSetFontOp containedin=AbcFileHeader,AbcTuneHeader,AbcTuneBody
-
-" PATTERN TESTED - SUCCEEDED - DO NOT EDIT :D
 sy region AbcInstructionField start=/^I:/ end=/[\w\s-]*\ze\%($\|%\)\{1}/ keepend oneline nextgroup=AbcFieldContinue skipnl matchgroup=AbcFieldID contains=AbcDirectiveName,AbcDirectiveParam containedin=AbcFileHeader,AbcTuneHeader,AbcTuneBody
 sy region AbcInstructionField start=/\[I:/ end=/\]/ keepend oneline contained matchgroup=AbcIFieldID contains=AbcDirectiveName,AbcDirectiveParam containedin=AbcTuneBody
 " K-NP-RUVmr]:\)\{1}/ end=/\]\{1}/ keepend oneline contains= containedin=TuneBody
@@ -83,22 +77,13 @@ sy region AbcInstructionField start=/\[I:/ end=/\]/ keepend oneline contained ma
 sy region AbcRemark start=/^r:/ end=/.*\ze$/ keepend oneline contained matchgroup=AbcRemarkID contains=AbcComment
 sy region AbcRemark start=/\[r:/ end=/[^%\]]*\zs\]/ keepend oneline contained matchgroup=AbcIRemarkID
 sy match AbcComment /\zs%\{1}[^%]*\ze$/ fold nextgroup=AbcComment skipnl
-
-
-
 sy region AbcSymbolField start=/^s:/ end=/[\w\s-]*\ze\%($\|%\)\{1}/ keepend oneline contained nextgroup=AbcFieldContinue skipnl matchgroup=AbcFieldID contains=AbcSymbol,AbcNoteSkip containedin=AbcTuneBody
-
-
-
-
-
 sy region AbcKeyField start=/^K:/ end=/[\w\s-]*\ze\%($\|%\)\{1}/ keepend oneline matchgroup=AbcFieldID contains=AbcKeyTonic,AbcKeyMode,AbcKeyExp,@AbcClef containedin=AbcTuneHeader,AbcTuneBody
 sy region AbcKeyField start=/\[K:/ end=/\]/ keepend oneline matchgroup=AbcIFieldID contains=AbcKeyTonic,AbcKeyMode,AbcKeyExp,@AbcClef containedin=AbcTuneHeader,AbcTuneBody
-
-sy match KeyTonic /\%([A-G][b#]\=\)/ contained nextgroup=AbcKeyAccidental contains=AbcNote containedin=AbcKeyField
+sy match AbcKeyTonic /\%([A-G][b#]\=\)/ contained nextgroup=AbcKeyAccidental contains=AbcNote containedin=AbcKeyField
 sy keyword AbcKeyTonic Hp HP contained nextgroup=AbcKeyExp containedin=AbcKeyTonic
 sy match AbcKeyAccidental /[b#]/ contained containedin=AbcKeyTonic
-sy match KeyMode /\c\%(m\%[inor]\|maj\%[or]\|ion\%[ian]\|mix\%[olydian]\|dor\%[ian]\|phr\%[ygian]\|lyd\%[ian]\|loc\%[rian]\)\=/ contained containedin=KeyField
+sy match AbcKeyMode /\c\%(m\%[inor]\|maj\%[or]\|ion\%[ian]\|mix\%[olydian]\|dor\%[ian]\|phr\%[ygian]\|lyd\%[ian]\|loc\%[rian]\)\=/ contained containedin=KeyField
 sy case ignore
 sy keyword AbcKeyMode maj[or] m[inor] ion[ian] aeo[lian] mix[olydian] dor[ian] phr[ygian] lyd[ian] loc[rian] contained containedin=KeyField
 sy case match
@@ -115,7 +100,7 @@ sy match AbcClefStafflines / \%(s\%(tafflines\)\==[1-5]\)\=/ contained contained
 
 " TODO - edit 'AbcNote.vim' separately to organize the clustering and order of
 " what makes up an 'AbcNote'
-
+sy cluster AbcMusicCode contains=@AbcNote,@AbcBar,AbcRepeatBar,AbcRepeatBar,AbcRepeatBar
 sy region AbcRepeat start=/[|\[]\z(:\+\)/ skip=/::\|:|:\|:||:\|[|\[][1-9]\%(,[1-9]\|-[1-9]\)*/ end=/\z1\%(|\|\]\)[1-9]\=/ keepend contains=@MusicCode contained
 
 sy match AbcRepeatBar /[|\[]\%(:\+\)/ contained containedin=@AbcMusicCode
@@ -293,19 +278,20 @@ if version >= 508 || !exists("did_abc_syn_inits")
     let did_abc_syn_inits = 1
     hi link AbcStartString    Define
     hi link AbcComment        Comment
-    hi link ReservedChars     Ignore
-    hi link Directive         PreProc
-    hi link FField            Special
-    hi link HField            Special
-    hi link BField            Special
-    hi link IField            Special
-    hi link Unicode           Character
+    hi link AbcReservedChars  Ignore
+    hi link AbcDirective      PreProc
+    hi link AbcField          Special
+    hi link AbcIField         Special
+    hi link AbcUnicode        Character
     hi link @AbcMnemonics     Character
-    hi link Bar               Operator
-    hi link Tuple             Operator
-    hi link Broken            Operator
-    hi link Tie               Operator
-    hi link @AbcNote           Statement
+    hi link AbcBar            Operator
+    hi link AbcTuple          Operator
+    hi link AbcBroken         Operator
+    hi link AbcTie            Operator
+    hi link @AbcNote          Statement
+    " TODO - Change the highlighting for AbcNote so that each object of the
+    " note is shaded lighter of the same color, most likely something blue
+    " or green.
   else
     hi def link AbcComment        Comment
     hi def link IField            Special
