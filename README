@@ -1,8 +1,10 @@
 This is a mirror of http://www.vim.org/scripts/script.php?script_id=4100
 
-Recently, the abc music notation standard has received a large number of updates. That said, the syntax script for it has been insanely outdated, and doesn't work well with the current format that abc is now described by. I've begun a new project at "https://bitbucket.org/laughingman182/abc-vim&quot; specifically for updating this, and would also like to include a number of other features for the language, as well. I feel that there's a need to provide for one of the few formats of music notation that works well and is easy to learn.
+Recently, the abc music notation standard has received a large number of updates. That said, the syntax script for it has been insanely outdated, and doesn't work well with the current format that abc is now described by. I've begun a new project at "https://bitbucket.org/laughingman182/abc-vim&quot; & at "http://code.google.com/p/abc-vim&quot; (since now the Bitbucket repo isn't working) specifically for updating this, and would also like to include a number of other features for the language, as well. I feel that there's a need to provide for one of the few formats of music notation that works well and is easy to learn.
 
 In future additions, I'd like to add functions, commands, omnicompletion, error checking, and pretty much every feature I can get out of Vim for this syntax.
+
+Another thing I'd like to do is add support for sending abc music files as input to programs that make use of abc code, such as the obvious standard command line programs, like abcm2ps, abcmidi, abc2prt, abctab2ps, and so forth, but also for large scale programs; music21 is one on my high priority lists. And further down the line, I'd like to somehow improve abcpp so that it can stream abc music notation code into something like a COM server for events in music; I was thinking it would be useful for things like MikuMikuDance, where movement of character models has to depend a lot on syncing their movement to the music("Miku teaches how to play drums", "learning basic flute with Luka Megurine", for some practical examples)
 
 Please send me emails on improvements!
 
@@ -25,10 +27,10 @@ you wish to, read the full license deed at
 the ABC standard now uses keywords that conform to RFC 2119, and as such,
 the standard conforms to the following:
 
-       The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
-       NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
-       "OPTIONAL" in this document are to be interpreted as described in
-       RFC 2119.
+       The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL
+       NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",  "MAY", and
+       "OPTIONAL" in this document are to be interpreted as described in
+       RFC 2119.
 
 In addition to the key words above, the key word "VOLATILE" is used to
 indicate sections which are under active discussion and/or likely to change
